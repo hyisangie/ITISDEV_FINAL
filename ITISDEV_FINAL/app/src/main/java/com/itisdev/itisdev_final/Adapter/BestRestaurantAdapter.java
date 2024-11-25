@@ -38,8 +38,8 @@ public class BestRestaurantAdapter extends RecyclerView.Adapter<BestRestaurantAd
     @Override
     public void onBindViewHolder(@NonNull BestRestaurantAdapter.viewholder holder, int position) {
         holder.restaurantNameTxt.setText(restaurants.get(position).getName());
-        holder.priceRangeTxt.setText(""+restaurants.get(position).getPriceRangeId());
-        holder.ratingTxt.setText(""+restaurants.get(position).getRating());
+//        holder.priceRangeTxt.setText(""+restaurants.get(position).getPriceRangeId());
+//        holder.ratingTxt.setText(""+restaurants.get(position).getRating());
 
 //        Glide.with(context).load(restaurants.get(position).getPhotos().get(0))
 //                .transform(new CenterCrop(), new RoundedCorners(30))
