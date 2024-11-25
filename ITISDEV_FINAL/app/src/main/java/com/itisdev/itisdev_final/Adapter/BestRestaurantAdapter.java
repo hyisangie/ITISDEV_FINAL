@@ -10,9 +10,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.itisdev.itisdev_final.Domain.Restaurant;
 import com.itisdev.itisdev_final.R;
 
@@ -31,7 +28,7 @@ public class BestRestaurantAdapter extends RecyclerView.Adapter<BestRestaurantAd
     @Override
     public BestRestaurantAdapter.viewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         context = parent.getContext();
-        View inflate = LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_best_restaurant, parent, false);
+        View inflate = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_restaurant, parent, false);
         return new viewholder(inflate);
     }
 
