@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cardView"
     android:layout_width="match_parent"
     android:layout_height="350dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_margin="8dp"
     app:cardCornerRadius="15dp"
-    app:cardElevation="3dp">
+    app:cardElevation="3dp"
+    android:contentDescription="Card representing Jollibee restaurant">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -25,19 +27,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
 
-
-        <TextView
-            android:id="@+id/textView7"
-            android:layout_width="44dp"
-            android:layout_height="39dp"
-            android:background="@drawable/goto_background"
-            android:gravity="center"
-            android:text="→"
-            android:textColor="@color/white"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraint2"
@@ -88,30 +77,6 @@
                 app:layout_constraintTop_toTopOf="@id/dot1"
                 app:layout_constraintBottom_toBottomOf="@id/dot1"/>
 
-            <TextView
-                android:id="@+id/dot2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="·"
-                android:textColor="@color/blue_grey"
-                android:layout_marginStart="5dp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toEndOf="@id/cuisineTxt"
-                app:layout_constraintTop_toTopOf="@id/cuisineTxt"
-                app:layout_constraintBottom_toBottomOf="@id/cuisineTxt"/>
-
-            <TextView
-                android:id="@+id/priceRangeTxt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="$$"
-                android:textColor="@color/blue_grey"
-                android:layout_marginStart="5dp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toEndOf="@id/dot2"
-                app:layout_constraintTop_toTopOf="@id/dot2"
-                app:layout_constraintBottom_toBottomOf="@id/dot2"/>
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -149,7 +114,7 @@
 
 
         <com.google.android.material.chip.Chip
-            android:id="@+id/chipPopular"
+            android:id="@+id/openingHoursChip"
             style="@style/Widget.MaterialComponents.Chip.Choice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

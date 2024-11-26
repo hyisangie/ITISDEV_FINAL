@@ -12,8 +12,6 @@
         android:layout_height="100dp"
         android:layout_marginBottom="16dp"
         android:layout_marginTop="8dp"
-        android:src=""
-        android:contentDescription=""
         android:scaleType="centerCrop"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -39,19 +37,7 @@
         android:textAlignment="center"
         app:layout_constraintTop_toBottomOf="@id/profile_name"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintMarginHorizontal="16dp" />
-
-    <TextView
-        android:id="@+id/followers_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="150 Followers  200 Following"
-        android:textSize="14sp"
-        app:layout_constraintTop_toBottomOf="@id/profile_bio"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Voucher Section -->
     <TextView
@@ -61,9 +47,8 @@
         android:text="Vouchers"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/followers_info"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintMarginTop="16dp" />
+        app:layout_constraintTop_toBottomOf="@id/profile_bio"
+        app:layout_constraintStart_toStartOf="parent"/>
 
     <LinearLayout
         android:id="@+id/voucher_layout"
@@ -71,7 +56,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="16dp"
-        android:background=""
         app:layout_constraintTop_toBottomOf="@id/vouchers_header"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -104,33 +88,6 @@
                     android:layout_marginEnd="8dp"
                     android:background="@drawable/card_background">
 
-                    <TextView
-                        android:id="@+id/voucher_restaurant"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Restaurant: La Bella Italia"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/voucher_id"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Voucher ID: 1125853"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/voucher_discount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="₱100 off"
-                        android:textSize="14sp" />
-                    <TextView
-                        android:id="@+id/voucher_condition"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Min. Spend ₱1000"
-                        android:textSize="14sp" />
                 </LinearLayout>
 
             </LinearLayout>

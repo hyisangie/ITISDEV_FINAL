@@ -30,11 +30,10 @@ public class LoginActivity extends BaseActivity {
                 String email = binding.emailEdt.getText().toString();
                 String password = binding.passwordEdt.getText().toString();
 
-                // 这里最好用firestore. 但是我不知道firestore能否加其他字段，因为登录后要区分是用户还是商家，进入不同页面
                 mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isComplete()) {
+                        if (task.isSuccessful()) {
                             Toast.makeText(LoginActivity.this, "Authentication Successful", Toast.LENGTH_LONG).show();
                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
                         } else {
