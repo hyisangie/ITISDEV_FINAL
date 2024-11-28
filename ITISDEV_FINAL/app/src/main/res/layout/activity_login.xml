@@ -27,6 +27,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Plated"
+                    android:fontFamily="@font/readex_pro"
                     android:textColor="@color/blue_grey"
                     android:textSize="45sp"
                     android:textStyle="bold" />
@@ -41,6 +42,7 @@
                 android:layout_marginEnd="32dp"
                 android:layout_marginStart="32dp"
                 android:hint="Email Address"
+                android:fontFamily="@font/readex_pro"
                 android:textAlignment="center"
                 android:textColorHint="@color/blue_grey"
                 android:textSize="16sp"
@@ -55,6 +57,7 @@
                 android:layout_marginEnd="32dp"
                 android:layout_marginStart="32dp"
                 android:hint="Password"
+                android:fontFamily="@font/readex_pro"
                 android:textAlignment="center"
                 android:textColorHint="@color/blue_grey"
                 android:textSize="16sp"
@@ -68,6 +71,7 @@
                 android:layout_height="wrap_content"
                 android:text="Login"
                 android:background="@drawable/red_button_background"
+                android:fontFamily="@font/readex_pro"
                 android:layout_margin="32dp"
                 android:textColor="@color/white"
                 android:textSize="16sp"
@@ -83,6 +87,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Not a user? "
+                    android:fontFamily="@font/readex_pro"
                     android:textColor="@color/blue_grey"
                     android:textSize="16sp"/>
 
@@ -91,6 +96,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Sign up"
+                    android:fontFamily="@font/readex_pro"
                     android:textColor="@color/red"
                     android:textSize="16sp"/>
 

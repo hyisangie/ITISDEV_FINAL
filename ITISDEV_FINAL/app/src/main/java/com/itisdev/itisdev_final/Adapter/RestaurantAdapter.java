@@ -1,19 +1,13 @@
 package com.itisdev.itisdev_final.Adapter;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-import com.itisdev.itisdev_final.Activity.MainActivity;
+import com.bumptech.glide.Glide;
 import com.itisdev.itisdev_final.Activity.RestaurantActivity;
 import com.itisdev.itisdev_final.Domain.Restaurant;
 import com.itisdev.itisdev_final.R;
@@ -46,34 +40,41 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.restaurantName.setText(data.get(position).getName());
-        holder.rating.setText(data.get(position).getRating().toString());
-        DatabaseReference cuisineRef = FirebaseDatabase.getInstance().getReference("cuisineRef");
-        Query query = cuisineRef.orderByChild("id").equalTo(data.get(position).getCuisineType());
 
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    holder.cuisineType.setText(dataSnapshot.child("type").getValue(String.class));
-                }
-            }
+        Restaurant restaurant = data.get(position);
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("FirebaseError", error.getMessage());
-            }
-        });
+        // restaurant name
+        holder.restaurantName.setText(restaurant.getName());
 
-        String openingHours = data.get(position).getOpeningHours();
-        if (openingHours == null || openingHours.isEmpty()) {
-            openingHours = "Unavailable";
+        // set rating
+        Float rating = restaurant.getRating();
+        if (rating != null) {
+            holder.rating.setVisibility(View.VISIBLE);
+            holder.rating.setText(String.format("★ %.1f", rating));
+        } else {
+            holder.rating.setVisibility(View.GONE);
         }
-        holder.openingHours.setText(openingHours);
 
+        // set images
+        List<String> images = restaurant.getImages();
+        if (images != null && !images.isEmpty()) {
+            // load the first image as preview
+            Glide.with(context)
+                    .load(images.get(0))
+                    .error(R.drawable.placeholder_restaurant)
+                    .centerCrop()
+                    .into(holder.restaurantImage);
+        }
+
+        holder.cuisineType.setText(restaurant.getCuisineType());
+        holder.descriptionTxt.setText(restaurant.getDescription());
+        holder.openingHours.setText(restaurant.getOpeningHours());
+
+        // setup click event
         holder.cardView.setOnClickListener(v -> {
             Intent intent = new Intent(context, RestaurantActivity.class);
-            intent.putExtra("restaurantId", data.get(position).getId());
+            // sent restaurantId to Detailed page
+            intent.putExtra("restaurantId", restaurant.getId());
             context.startActivity(intent);
         });
     }
@@ -84,16 +85,20 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView restaurantName, rating, cuisineType;
-        Chip openingHours;
+        TextView restaurantName, rating, descriptionTxt;
+        Chip openingHours,  cuisineType;
         CardView cardView;
+
+        ImageView restaurantImage;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             restaurantName = itemView.findViewById(R.id.restaurantNameTxt);
-            rating = itemView.findViewById(R.id.ratingTxt);
-            cuisineType = itemView.findViewById(R.id.cuisineTxt);
+            descriptionTxt = itemView.findViewById(R.id.descriptionTxt);
+            rating = itemView.findViewById(R.id.ratingChip);
+            cuisineType = itemView.findViewById(R.id.cuisineChip);
             openingHours = itemView.findViewById(R.id.openingHoursChip);
+            restaurantImage = itemView.findViewById(R.id.restaurantImage);
             cardView = itemView.findViewById(R.id.cardView);
         }
     }

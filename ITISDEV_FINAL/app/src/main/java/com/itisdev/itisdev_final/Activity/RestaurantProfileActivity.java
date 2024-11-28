@@ -1,19 +1,21 @@
 package com.itisdev.itisdev_final.Activity;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.LinearLayout;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.itisdev.itisdev_final.Adapter.ImageSliderAdapter;
 import com.itisdev.itisdev_final.Adapter.ReviewAdapter;
 import com.itisdev.itisdev_final.Domain.Review;
 import com.itisdev.itisdev_final.databinding.ActivityRestaurantProfileBinding;
@@ -26,6 +28,7 @@ public class RestaurantProfileActivity extends BaseActivity {
     private ActivityRestaurantProfileBinding binding;
     private List<Review> reviews;
     private ReviewAdapter reviewAdapter;
+    private String restaurantId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,33 +36,41 @@ public class RestaurantProfileActivity extends BaseActivity {
         binding = ActivityRestaurantProfileBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // get from realtime DB
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("restaurants");
+        setupClickListeners();
 
-        // TODO: change this to dynamic
-        databaseReference.orderByChild("id").equalTo("1").addValueEventListener(new ValueEventListener() {
+        // get restaurantId from Intent
+        restaurantId = getIntent().getStringExtra("restaurantId");
+
+        // get from realtime DB
+        DatabaseReference databaseReference = database.getReference("restaurants");
+
+        databaseReference.child(restaurantId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String cuisineType = "";
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    String restaurantName = dataSnapshot.child("name").getValue(String.class);
-                    String description = dataSnapshot.child("description").getValue(String.class);
-                    binding.restaurantName.setText(restaurantName);
-                    binding.restaurantDescription.setText(description);
-                    cuisineType = dataSnapshot.child("cuisineType").getValue(String.class);
-                }
-                database.getReference("cuisineRef").orderByChild("id").equalTo(cuisineType).addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                            binding.restaurantCuisine.setText(dataSnapshot.child("type").getValue(String.class));
+                if (snapshot.exists()) {
+                    String restaurantName = snapshot.child("name").getValue(String.class);
+                    String description = snapshot.child("description").getValue(String.class);
+                    String cuisineType = snapshot.child("cuisineType").getValue(String.class);
+
+                    // Image URLs
+                    List<String> imageUrls = new ArrayList<>();
+                    DataSnapshot imagesSnapshot = snapshot.child("images");
+                    for (DataSnapshot imageSnapshot : imagesSnapshot.getChildren()) {
+                        String imageUrl = imageSnapshot.getValue(String.class);
+                        if (imageUrl != null) {
+                            imageUrls.add(imageUrl);
                         }
                     }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
 
-                    }
-                });
+                    ViewPager2 imageSlider = binding.imageSlider;
+                    ImageSliderAdapter adapter = new ImageSliderAdapter(RestaurantProfileActivity.this, imageUrls);
+                    imageSlider.setAdapter(adapter);
+
+                    binding.restaurantName.setText(restaurantName);
+                    binding.restaurantDescription.setText(description);
+                    binding.restaurantCuisine.setText(cuisineType);
+
+                }
             }
 
             @Override
@@ -75,9 +86,6 @@ public class RestaurantProfileActivity extends BaseActivity {
         reviews = new ArrayList<>();
         reviewAdapter = new ReviewAdapter(this, reviews);
         recyclerView.setAdapter(reviewAdapter);
-
-        // TODO: change this to dynamic
-        String restaurantId = "1";
 
         if (restaurantId != null) {
             // initialize Realtime DB
@@ -100,6 +108,19 @@ public class RestaurantProfileActivity extends BaseActivity {
             });
         } else {
             Log.e("RestaurantActivity", "Invalid restaurantId");
+        }
+    }
+
+    private void setupClickListeners() {
+        LinearLayout voucherLayout = binding.voucherImg.getParent() instanceof LinearLayout ?
+                (LinearLayout) binding.voucherImg.getParent() : null;
+
+        if (voucherLayout != null) {
+            voucherLayout.setOnClickListener(v -> {
+                Intent intent = new Intent(RestaurantProfileActivity.this, VoucherInfosActivity.class);
+                intent.putExtra("restaurantId", restaurantId);
+                startActivity(intent);
+            });
         }
     }
 }

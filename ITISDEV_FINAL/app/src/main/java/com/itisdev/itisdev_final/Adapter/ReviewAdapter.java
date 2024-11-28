@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -44,19 +45,41 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Review review = data.get(position);
 
-        // TODO: reviewProfileImage
-        // TODO: reviewImage
         holder.reviewContent.setText(review.getDescription());
         holder.reviewRating.setRating(review.getRating());
 
+        String reviewImage = review.getImage();
+        if (reviewImage != null && !reviewImage.isEmpty()) {
+            holder.reviewImage.setVisibility(View.VISIBLE);
+            Glide.with(context)
+                    .load(reviewImage)
+                    .into(holder.reviewImage);
+        } else {
+            holder.reviewImage.setVisibility(View.GONE);
+        }
+
         // Query Firebase to get email for the userId
-        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(String.valueOf(review.getUserId()));
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference()
+                .child("users")
+                .child(review.getUserId());  // userId
+
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
+                    // get user's email
                     String email = snapshot.child("email").getValue(String.class);
-                    holder.reviewUsername.setText(email);
+                    String profileImage = snapshot.child("profileImage").getValue(String.class);
+
+                    holder.reviewUsername.setText(email != null ? email : "Anonymous User");
+
+                    if (profileImage != null && !profileImage.isEmpty()) {
+                        Glide.with(context)
+                                .load(profileImage)
+                                .placeholder(R.drawable.baseline_person_24)
+                                .into(holder.reviewProfileImage);
+                    }
+
                 } else {
                     holder.reviewUsername.setText("Unknown User");
                 }
@@ -64,9 +87,11 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("FirebaseError", "Failed to fetch user email", error.toException());
+                holder.reviewUsername.setText("Unknown User");
+                Log.e("ReviewAdapter", "Error fetching user data", error.toException());
             }
         });
+
 
         // Query Firebase to get restaurant name for the resId
         DatabaseReference restaurantRef = FirebaseDatabase.getInstance().getReference("restaurants").child(String.valueOf(review.getRestaurantId()));

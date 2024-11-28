@@ -3,95 +3,69 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp"
     android:background="@drawable/card_background"
-    android:layout_marginBottom="8dp">
+    android:padding="12dp">
 
-    <!-- Profile Picture -->
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/reviewProfileImg"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:scaleType="centerCrop"
-        android:layout_marginEnd="8dp"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:shapeAppearanceOverlay="@style/CircleImageView" />
 
-    <!-- Username -->
     <TextView
         android:id="@+id/reviewUsernameTxt"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Alexandra Voss"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@id/reviewProfileImg"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="8dp"
         android:ellipsize="end"
-        android:maxLines="1" />
+        android:maxLines="1"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/reviewProfileImg"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Restaurant Name -->
     <TextView
         android:id="@+id/reviewRestaurantNameTxt"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Restaurant: La Bella Italia"
-        android:textSize="14sp"
-        android:textStyle="italic"
-        app:layout_constraintTop_toBottomOf="@id/reviewUsernameTxt"
-        app:layout_constraintStart_toEndOf="@id/reviewProfileImg"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:ellipsize="end"
-        android:maxLines="1" />
-
-    <!-- Post Time -->
-    <TextView
-        android:id="@+id/reviewTimeTxt"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="2 hours ago"
         android:textSize="12sp"
-        android:textColor="@color/blue_grey"
-        app:layout_constraintTop_toBottomOf="@id/reviewRestaurantNameTxt"
-        app:layout_constraintStart_toEndOf="@id/reviewProfileImg"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:textStyle="italic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/reviewUsernameTxt"
+        app:layout_constraintTop_toBottomOf="@id/reviewUsernameTxt" />
 
-    <!-- Rating -->
     <RatingBar
         android:id="@+id/reviewRatingRB"
+        style="?android:attr/ratingBarStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:isIndicator="true"
         android:numStars="5"
         android:rating="4.5"
         android:stepSize="0.5"
-        android:scaleX="0.6"
-        android:scaleY="0.6"
-        android:isIndicator="true"
-        app:layout_constraintTop_toBottomOf="@id/reviewTimeTxt"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintStart_toStartOf="@id/reviewRestaurantNameTxt"
+        app:layout_constraintTop_toBottomOf="@id/reviewRestaurantNameTxt" />
 
-    <!-- Post Content -->
     <TextView
         android:id="@+id/reviewContentTxt"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Post content goes here..."
-        android:textSize="14sp"
-        app:layout_constraintTop_toBottomOf="@id/reviewRatingRB"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_marginTop="4dp"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/reviewRatingRB"
+        app:layout_constraintTop_toBottomOf="@id/reviewRatingRB" />
 
-    <!-- Post Image -->
     <ImageView
         android:id="@+id/reviewImg"
-        android:layout_width="0dp"
-        android:layout_height="200dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="8dp"
         android:scaleType="centerCrop"
-        app:layout_constraintTop_toBottomOf="@id/reviewContentTxt"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp" />
+        app:layout_constraintStart_toStartOf="@id/reviewContentTxt"
+        app:layout_constraintTop_toBottomOf="@id/reviewContentTxt" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

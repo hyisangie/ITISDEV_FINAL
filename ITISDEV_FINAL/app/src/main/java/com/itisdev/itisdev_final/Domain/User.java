@@ -5,6 +5,12 @@ public class User {
     private String email;
     private String password;
 
+    private String role;
+
+    private String profileImage;
+
+    private String restaurantId;
+
     private String description;
 
     // Getters and Setters
@@ -20,5 +26,21 @@ public class User {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getRestaurantId() {
+        return restaurantId;
+    }
+
+    public void setRestaurantId(String restaurantId) {
+        this.restaurantId = restaurantId;
     }
 }

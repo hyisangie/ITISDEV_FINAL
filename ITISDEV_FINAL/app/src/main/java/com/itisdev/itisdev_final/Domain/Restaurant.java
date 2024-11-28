@@ -1,6 +1,8 @@
 package com.itisdev.itisdev_final.Domain;
 
 
+import java.util.ArrayList;
+
 public class Restaurant {
     private String id;
     private String name;
@@ -8,8 +10,8 @@ public class Restaurant {
 
     private Float rating;
     private String tags;
-    private String images;
-    private int cuisineType;
+    private ArrayList<String> images;
+    private String cuisineType;
     private String address;
     private String openingHours;
     private String contactDetails;
@@ -31,10 +33,10 @@ public class Restaurant {
     }
     public String getTags() { return tags; }
     public void setTags(String tags) { this.tags = tags; }
-    public String getImages() { return images; }
-    public void setImages(String images) { this.images = images; }
-    public int getCuisineType() { return cuisineType; }
-    public void setCuisineType(int cuisineType) { this.cuisineType = cuisineType; }
+    public ArrayList<String> getImages() { return images; }
+    public void setImages(ArrayList<String> images) { this.images = images; }
+    public String getCuisineType() { return cuisineType; }
+    public void setCuisineType(String cuisineType) { this.cuisineType = cuisineType; }
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
     public String getOpeningHours() { return openingHours; }

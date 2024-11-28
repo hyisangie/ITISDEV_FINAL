@@ -1,60 +1,63 @@
-<androidx.core.widget.NestedScrollView
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <!-- Main Content -->
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:layout_marginBottom="?attr/actionBarSize">
 
-        <!-- 顶部内容 -->
-        <LinearLayout
+        <!-- AppBar -->
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            app:layout_constraintTop_toTopOf="parent">
 
-            <!-- 示例：搜索框 -->
-            <EditText
-                android:id="@+id/searchEditText"
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/topAppBar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/white"
+                app:title="Restaurants"
+                app:titleTextColor="@color/black"/>
+
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/searchBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Search Restaurants"
+                android:layout_margin="16dp"
                 android:background="@drawable/search_background"
-                android:padding="10dp" />
+                android:iconifiedByDefault="false"
+                android:queryHint="Search restaurants..."/>
+        </com.google.android.material.appbar.AppBarLayout>
 
-            <!-- 示例：筛选项 -->
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chipGroup"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp">
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/popularChip"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Popular" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/newChip"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="New" />
-            </com.google.android.material.chip.ChipGroup>
-
-        </LinearLayout>
-
-        <!-- 可滚动的 RecyclerView -->
+        <!-- Restaurant List -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/restaurantRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="false" />
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clipToPadding="false"
+            android:padding="16dp"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/appBarLayout"/>
 
-    </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/white"
+        app:menu="@menu/bottom_nav_menu"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

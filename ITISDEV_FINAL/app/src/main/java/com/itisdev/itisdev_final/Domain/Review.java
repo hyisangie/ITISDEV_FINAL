@@ -6,7 +6,7 @@ public class Review {
     private String restaurantId;
     private float rating;
     private String description;
-    private String images;
+    private String image;
 
     // Getters and Setters
     public String getId() { return id; }
@@ -19,6 +19,6 @@ public class Review {
     public void setRating(float rating) { this.rating = rating; }
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
-    public String getImages() { return images; }
-    public void setImages(String images) { this.images = images; }
+    public String getImage() { return image; }
+    public void setImage(String images) { this.image = images; }
 }

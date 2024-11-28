@@ -1,244 +1,168 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <!-- 头部图片区域 -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:layout_height="300dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-        <!-- Back Button -->
-        <ImageView
-            android:id="@+id/back_button"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:contentScrim="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-        <!-- Title -->
-        <TextView
-            android:id="@+id/page_title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Restaurant Details"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textAlignment="center"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <!-- Share Button -->
-        <ImageView
-            android:id="@+id/share_button"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <!-- Image Gallery -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/gallery"
-            android:layout_width="0dp"
-            android:layout_height="200dp"
-            app:layout_constraintTop_toBottomOf="@id/page_title"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <!-- Main Image -->
-            <ImageView
-                android:id="@+id/main_image"
-                android:layout_width="0dp"
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/imageViewPager"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/secondary_image_1" />
+                app:layout_collapseMode="parallax"/>
 
-            <!-- Secondary Image 1 -->
-            <ImageView
-                android:id="@+id/secondary_image_1"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:scaleType="centerCrop"
-                app:layout_constraintStart_toEndOf="@id/main_image"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/secondary_image_2"
-                app:layout_constraintDimensionRatio="1:1" />
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"/>
 
-            <!-- Secondary Image 2 -->
-            <ImageView
-                android:id="@+id/secondary_image_2"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:scaleType="centerCrop"
-                app:layout_constraintStart_toEndOf="@id/main_image"
-                app:layout_constraintTop_toBottomOf="@id/secondary_image_1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintDimensionRatio="1:1" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-        <!-- Restaurant Info -->
-        <TextView
-            android:id="@+id/restaurant_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="La Bella Italia"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/gallery"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="8dp" />
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <TextView
-            android:id="@+id/openingHoursTxt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="10:00 AM - 11:00 PM"
-            android:textSize="13sp"
-            android:layout_marginStart="5dp"
-            android:layout_marginBottom="2dp"
-            app:layout_constraintBottom_toBottomOf="@id/restaurant_name"
-            app:layout_constraintStart_toEndOf="@+id/restaurant_name"
-            android:layout_marginTop="8dp" />
-
-        <TextView
-            android:id="@+id/restaurant_rating"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="⭐ 4.5 (200 ratings)"
-            android:textSize="16sp"
-            app:layout_constraintTop_toBottomOf="@id/restaurant_name"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="4dp" />
-
-        <!-- Tags -->
-        <TextView
-            android:id="@+id/tags_header"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Tags"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/restaurant_rating"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="16dp" />
-
-        <com.google.android.flexbox.FlexboxLayout
-            android:id="@+id/tags_container"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/tags_header"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="8dp">
-
-            <!-- Example Tags -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:text="Pet Friendly"
-                android:background="@drawable/tag_background"
-                android:layout_marginEnd="8dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:text="Family Friendly"
-                android:background="@drawable/tag_background"
-                android:layout_marginEnd="8dp" />
-        </com.google.android.flexbox.FlexboxLayout>
-
-        <!-- Vouchers -->
-        <TextView
-            android:id="@+id/vouchers_header"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Vouchers"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/tags_container"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="16dp" />
-
-        <HorizontalScrollView
-            android:id="@+id/horizontal_scroll_view"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/vouchers_header"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="8dp">
+            android:orientation="vertical"
+            android:padding="16dp">
 
+            <!-- Restaurant Name and rating -->
             <LinearLayout
-                android:id="@+id/voucher_container"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
 
-                <!-- Example Voucher -->
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:padding="8dp"
-                    android:background="@drawable/voucher_background"
-                    android:layout_marginEnd="8dp">
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/voucher_info"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="₱100 off\nMin. Spend ₱1000"
-                        android:textSize="14sp"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
-
-                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/restaurant_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="CLAIM"
-                        android:layout_marginStart="10dp"
-                        app:layout_constraintStart_toEndOf="@id/voucher_info"
-                        app:layout_constraintTop_toTopOf="@id/voucher_info"
-                        app:layout_constraintBottom_toBottomOf="@id/voucher_info" />
+                        android:fontFamily="@font/readex_pro"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black"/>
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                    <TextView
+                        android:id="@+id/openingHoursTxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/readex_pro"
+                        android:textSize="14sp"
+                        android:layout_marginTop="4dp"/>
+                    <TextView
+                        android:id="@+id/descriptionTxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/readex_pro"
+                        android:textSize="14sp"
+                        android:layout_marginTop="4dp"/>
+                </LinearLayout>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="#FFF8E1"
+                    app:cardCornerRadius="8dp">
+
+                    <TextView
+                        android:id="@+id/restaurant_rating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/public_sans"
+                        android:padding="8dp"
+                        android:textStyle="bold"/>
+                </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
-        </HorizontalScrollView>
 
-        <!-- User Reviews -->
-        <TextView
-            android:id="@+id/reviews_header"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="User Reviews"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/horizontal_scroll_view"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="16dp" />
+            <!-- tags -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Features"
+                android:fontFamily="@font/readex_pro"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/reviews_recycler_view"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="false"
-            app:layout_constraintTop_toBottomOf="@id/reviews_header"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="8dp" />
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/tags_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:chipSpacingHorizontal="8dp"
+                app:chipSpacingVertical="8dp"
+                android:layout_marginBottom="24dp"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.core.widget.NestedScrollView>
+            <!-- vouchers -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Available Vouchers"
+                android:fontFamily="@font/readex_pro"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/vouchers_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:clipToPadding="false"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:layout_marginBottom="24dp"/>
+
+            <!-- 评论区域 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Reviews"
+                    android:fontFamily="@font/readex_pro"
+                    android:textSize="18sp"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/reviews_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"/>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
