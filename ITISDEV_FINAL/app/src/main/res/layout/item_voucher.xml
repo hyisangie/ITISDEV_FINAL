@@ -31,6 +31,14 @@
             android:textSize="14sp"/>
 
         <TextView
+            android:id="@+id/voucherConditionTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/readex_pro"
+            android:textSize="14sp"/>
+
+        <TextView
             android:id="@+id/voucherAvailedTxt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -38,14 +46,6 @@
             android:fontFamily="@font/readex_pro"
             android:textSize="14sp"/>
 
-
-        <TextView
-            android:id="@+id/voucherConditionTxt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:fontFamily="@font/readex_pro"
-            android:textSize="14sp"/>
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

@@ -35,8 +35,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class SignupAsBusinessOwnerActivity extends BaseActivity {
 
+    private boolean isEditMode = false;
+    private String originalRestaurantId;
+    private ArrayList<String> existingImageUrls = new ArrayList<>();
     private ActivitySignupAsBusinessOwnerBinding binding;
-
     private TextInputEditText restaurantNameEdt, addressEdt, tagsEdt, mobileNumberEdt, descriptionEdt;
     private AutoCompleteTextView cuisineTypeDropdown;
     private MaterialButton addImagesBtn, openTimeBtn, closeTimeBtn, submitBtn;
@@ -51,31 +53,100 @@ public class SignupAsBusinessOwnerActivity extends BaseActivity {
         setContentView(binding.getRoot());
 
         initViews();
+
+        // Check if in edit mode
+        if (getIntent().hasExtra("restaurantId")) {
+            isEditMode = true;
+            originalRestaurantId = getIntent().getStringExtra("restaurantId");
+            loadExistingData();
+
+            // Disable Restaurant Name editing
+            restaurantNameEdt.setEnabled(false);
+        }
+
         setupCuisineTypeDropdown();
         setupTimeButtons();
         setupImagePicker();
         setupSubmitButton();
     }
 
+    private void loadExistingData() {
+
+        DatabaseReference restaurantRef = database.getReference("restaurants").child(originalRestaurantId);
+        restaurantRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Restaurant restaurant = snapshot.getValue(Restaurant.class);
+                if (restaurant != null) {
+                    // Fill in existing data
+                    restaurantNameEdt.setText(restaurant.getName());
+                    addressEdt.setText(restaurant.getAddress());
+                    cuisineTypeDropdown.setText(restaurant.getCuisineType());
+                    tagsEdt.setText(restaurant.getTags());
+                    mobileNumberEdt.setText(restaurant.getContactDetails());
+                    descriptionEdt.setText(restaurant.getDescription());
+
+                    // Handle opening hours
+                    String[] hours = restaurant.getOpeningHours().split(" - ");
+                    if (hours.length == 2) {
+                        openingTime = hours[0];
+                        closingTime = hours[1];
+                        openTimeBtn.setText(openingTime);
+                        closeTimeBtn.setText(closingTime);
+                    }
+
+                    // Handle existing images
+                    existingImageUrls = restaurant.getImages();
+                    if (existingImageUrls != null && !existingImageUrls.isEmpty()) {
+                        addImagesBtn.setText("Selected " + existingImageUrls.size() + "images");
+                    }
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(SignupAsBusinessOwnerActivity.this,
+                        "Failed to load restaurant data", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGES_REQUEST && resultCode == RESULT_OK) {
-            selectedImages.clear();
 
-            if (data.getClipData() != null) {
-                // multiple images
-                int count = data.getClipData().getItemCount();
-                for (int i = 0; i < count; i++) {
-                    Uri imageUri = data.getClipData().getItemAt(i).getUri();
+            if (isEditMode) {
+                if (data.getClipData() != null) {
+                    int count = data.getClipData().getItemCount();
+                    for (int i = 0; i < count; i++) {
+                        Uri imageUri = data.getClipData().getItemAt(i).getUri();
+                        selectedImages.add(imageUri);
+                    }
+                } else if (data.getData() != null) {
+                    Uri imageUri = data.getData();
                     selectedImages.add(imageUri);
                 }
-            } else if (data.getData() != null) {
-                // single image
-                Uri imageUri = data.getData();
-                selectedImages.add(imageUri);
+            } else {
+                selectedImages.clear();
+
+                if (data.getClipData() != null) {
+                    // multiple images
+                    int count = data.getClipData().getItemCount();
+                    for (int i = 0; i < count; i++) {
+                        Uri imageUri = data.getClipData().getItemAt(i).getUri();
+                        selectedImages.add(imageUri);
+                    }
+                } else if (data.getData() != null) {
+                    // single image
+                    Uri imageUri = data.getData();
+                    selectedImages.add(imageUri);
+                }
+
             }
 
+            int totalImages = selectedImages.size() + existingImageUrls.size();
             addImagesBtn.setText("Seleted " + selectedImages.size() + " images");
         }
     }
@@ -83,16 +154,20 @@ public class SignupAsBusinessOwnerActivity extends BaseActivity {
     private void setupSubmitButton() {
         submitBtn.setOnClickListener(v -> {
             if (validateInputs()) {
-                uploadImages();
+                ProgressDialog progressDialog = new ProgressDialog(this);
+                progressDialog.setTitle("Uploading");
+                progressDialog.show();
+
+                if (selectedImages.isEmpty()) {
+                    saveRestaurantInfo(new ArrayList<>(), progressDialog);
+                } else {
+                    uploadImages(progressDialog);
+                }
             }
         });
     }
 
-    private void uploadImages() {
-        ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setTitle("Uploading");
-        progressDialog.show();
-
+    private void uploadImages(ProgressDialog progressDialog) {
         ArrayList<String> imageUrls = new ArrayList<>();
         AtomicInteger uploadCount = new AtomicInteger(0);
 
@@ -111,36 +186,58 @@ public class SignupAsBusinessOwnerActivity extends BaseActivity {
                                 saveRestaurantInfo(imageUrls, progressDialog);
                             }
                         });
+                    })
+                    .addOnFailureListener(e -> {
+                        progressDialog.dismiss();
+                        Toast.makeText(SignupAsBusinessOwnerActivity.this,
+                                "Failed to upload images", Toast.LENGTH_LONG).show();
                     });
         }
     }
 
-    private void saveRestaurantInfo(ArrayList<String> imageUrls, ProgressDialog progressDialog) {
+    private void saveRestaurantInfo(ArrayList<String> newImageUrls, ProgressDialog progressDialog) {
         Restaurant restaurant = new Restaurant();
         restaurant.setName(restaurantNameEdt.getText().toString());
         restaurant.setAddress(addressEdt.getText().toString());
         restaurant.setCuisineType(cuisineTypeDropdown.getText().toString());
         restaurant.setTags(tagsEdt.getText().toString());
-        restaurant.setImages(imageUrls);
+
+        // combine old and new images
+        ArrayList<String> allImages = new ArrayList<>(existingImageUrls);
+        allImages.addAll(newImageUrls);
+        restaurant.setImages(allImages);
+
         restaurant.setOpeningHours(openingTime + " - " + closingTime);
         restaurant.setContactDetails(mobileNumberEdt.getText().toString());
         restaurant.setDescription(descriptionEdt.getText().toString());
 
         // save to firebase
-        DatabaseReference newRestaurantRef = database.getReference("restaurants").push();
-        String restaurantId = newRestaurantRef.getKey();
-        restaurant.setId(restaurantId);
+        DatabaseReference restaurantRef;
+        if (isEditMode) {
+            restaurant.setId(originalRestaurantId);
+            restaurantRef = database.getReference("restaurants").child(originalRestaurantId);
+        } else {
+            restaurantRef = database.getReference("restaurants").push();
+            restaurant.setId(restaurantRef.getKey());
+        }
 
-        newRestaurantRef.setValue(restaurant)
+
+        restaurantRef.setValue(restaurant)
                 .addOnSuccessListener(aVoid -> {
                     progressDialog.dismiss();
-                    Toast.makeText(SignupAsBusinessOwnerActivity.this,
-                            "Restaurant information saved successfully", Toast.LENGTH_LONG).show();
-                    Intent intent = new Intent(SignupAsBusinessOwnerActivity.this, RestaurantProfileActivity.class);
-                    intent.putExtra("restaurantName", restaurant.getName());
-                    intent.putExtra("restaurantId", restaurant.getId());
-                    startActivity(intent);
-                    finish();
+                    Toast.makeText(SignupAsBusinessOwnerActivity.this, isEditMode ?
+                            "Restaurant information updated successfully" : "Restaurant information saved successfully",
+                            Toast.LENGTH_LONG).show();
+
+                    if (isEditMode) {
+                        finish();
+                    } else {
+                        Intent intent = new Intent(SignupAsBusinessOwnerActivity.this, RestaurantProfileActivity.class);
+                        intent.putExtra("restaurantName", restaurant.getName());
+                        intent.putExtra("restaurantId", restaurant.getId());
+                        startActivity(intent);
+                        finish();
+                    }
                 })
                 .addOnFailureListener(e -> {
                     progressDialog.dismiss();
@@ -178,11 +275,12 @@ public class SignupAsBusinessOwnerActivity extends BaseActivity {
             return false;
         }
 
-        if (selectedImages.isEmpty()) {
+        if (selectedImages.isEmpty() && existingImageUrls.isEmpty()) {
             Toast.makeText(this, "Please select at least one image",
                     Toast.LENGTH_LONG).show();
             return false;
         }
+
         return true;
     }
 

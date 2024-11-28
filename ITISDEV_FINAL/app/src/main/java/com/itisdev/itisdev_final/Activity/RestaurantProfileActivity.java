@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.LinearLayout;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -112,6 +113,18 @@ public class RestaurantProfileActivity extends BaseActivity {
     }
 
     private void setupClickListeners() {
+
+        // manage profile click listener
+        LinearLayout manageProfileContainer = binding.manageProfileContainer;
+        if (manageProfileContainer != null) {
+            manageProfileContainer.setOnClickListener(v -> {
+                Intent intent = new Intent(RestaurantProfileActivity.this, SignupAsBusinessOwnerActivity.class);
+                intent.putExtra("restaurantId", restaurantId);
+                startActivity(intent);
+            });
+        }
+
+        // Original voucher click listener
         LinearLayout voucherLayout = binding.voucherImg.getParent() instanceof LinearLayout ?
                 (LinearLayout) binding.voucherImg.getParent() : null;
 
@@ -122,5 +135,27 @@ public class RestaurantProfileActivity extends BaseActivity {
                 startActivity(intent);
             });
         }
+
+        // other services click listener
+        LinearLayout otherServicesLayout = binding.otherServicesImg.getParent() instanceof LinearLayout ?
+                (LinearLayout) binding.otherServicesImg.getParent() : null;
+
+        if (otherServicesLayout != null) {
+            otherServicesLayout.setOnClickListener(v -> {
+                new MaterialAlertDialogBuilder(this)
+                        .setTitle("Professional Services")
+                        .setMessage("Enjoy professional restaurant photography services!\n\n" +
+                                "Services include:\n" +
+                                "• Professional food photography\n" +
+                                "• Restaurant interior photography\n" +
+                                "• Event documentation\n\n" +
+                                "Contact Information:\n" +
+                                "Phone: (02) 2345-6789\n" +
+                                "Email: photo@restaurant.service.com")
+                        .setPositiveButton("OK", null)
+                        .show();
+            });
+        }
+
     }
 }
