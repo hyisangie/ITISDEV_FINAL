@@ -5,7 +5,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -82,6 +84,43 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
                 holder.availedDiscountText.setVisibility(View.GONE);
                 break;
         }
+
+        // Claim Voucher Button Click Listener
+        holder.claimVoucherBtn.setOnClickListener(v -> {
+            FirebaseDatabase.getInstance().getReference("claimedVouchers")
+                    .child(currentUserId) // Current user ID
+                    .child(voucher.getId()) // Voucher ID
+                    .setValue(true) // Mark as claimed
+                    .addOnSuccessListener(aVoid -> {
+                        // Success: Notify user
+                        Toast.makeText(context, "Voucher claimed successfully!", Toast.LENGTH_SHORT).show();
+                        holder.claimVoucherBtn.setEnabled(false);
+                        holder.claimVoucherBtn.setText("Claimed");
+                    })
+                    .addOnFailureListener(e -> {
+                        // Failure: Notify user
+                        Toast.makeText(context, "Failed to claim voucher. Try again.", Toast.LENGTH_SHORT).show();
+                    });
+        });
+
+        // Disable button if already claimed
+        FirebaseDatabase.getInstance().getReference("claimedVouchers")
+                .child(currentUserId)
+                .child(voucher.getId())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            holder.claimVoucherBtn.setEnabled(false);
+                            holder.claimVoucherBtn.setText("Claimed");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("VoucherAdapter", "Error checking claimed vouchers", error.toException());
+                    }
+                });
     }
 
     private void loadAvailedAmount(Voucher voucher, VoucherViewHolder holder) {
@@ -113,7 +152,6 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
                 });
     }
 
-
     @Override
     public int getItemCount() {
         return vouchers.size();
@@ -121,6 +159,7 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
 
     static class VoucherViewHolder extends RecyclerView.ViewHolder {
         TextView restaurantText, discountText, conditionText, availedDiscountText;
+        Button claimVoucherBtn; // Claim button
 
         public VoucherViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -128,6 +167,7 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
             discountText = itemView.findViewById(R.id.voucherDiscountTxt);
             conditionText = itemView.findViewById(R.id.voucherConditionTxt);
             availedDiscountText = itemView.findViewById(R.id.voucherAvailedTxt);
+            claimVoucherBtn = itemView.findViewById(R.id.claimVoucherBtn); // Initialize claim button
         }
     }
 }

@@ -46,6 +46,16 @@
             android:fontFamily="@font/readex_pro"
             android:textSize="14sp"/>
 
+        <!-- Claim Voucher Button -->
+        <Button
+            android:id="@+id/claimVoucherBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:backgroundTint="@android:color/holo_blue_light"
+            android:text="Claim Voucher"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"/>
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
