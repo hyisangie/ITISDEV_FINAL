@@ -4,4 +4,11 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
     </style>
+
+    <style name="ToolbarTitleText">
+        <item name="android:textSize">30sp</item>
+        <item name="android:fontFamily">@font/readex_pro</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">center</item>
+    </style>
 </resources>

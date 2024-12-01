@@ -18,13 +18,38 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent">
 
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/topAppBar"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@color/white"
-                app:title="Restaurants"
-                app:titleTextColor="@color/black"/>
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:gravity="center_vertical">
+
+                <!-- Banner Image  -->
+                <ImageView
+                    android:id="@+id/bannerImageView"
+                    android:layout_width="363dp"
+                    android:layout_height="83dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="16dp"
+                    android:scaleType="centerCrop" />
+
+                <!-- Restaurant Title -->
+                <com.google.android.material.appbar.MaterialToolbar
+                    android:id="@+id/topAppBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@color/transparent"
+                    app:title="Restaurants"
+                    app:titleTextColor="@color/black"
+                    app:titleTextAppearance="@style/ToolbarTitleText"
+                    app:titleCentered="true"
+                    app:elevation="2dp"/>
+
+            </LinearLayout>
 
             <androidx.appcompat.widget.SearchView
                 android:id="@+id/searchBar"
@@ -35,6 +60,8 @@
                 android:iconifiedByDefault="false"
                 android:queryHint="Search restaurants..."/>
         </com.google.android.material.appbar.AppBarLayout>
+
+
 
         <!-- Restaurant List -->
         <androidx.recyclerview.widget.RecyclerView

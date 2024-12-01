@@ -3,6 +3,7 @@ package com.itisdev.itisdev_final.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -11,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.itisdev.itisdev_final.R;
 
-
+import com.bumptech.glide.Glide;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,6 +30,7 @@ public class MainActivity extends BaseActivity {
     private ActivityMainBinding binding;
     private RestaurantAdapter restaurantAdapter;
     private List<Restaurant> restaurantList;
+    private ImageView bannerImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,11 +38,23 @@ public class MainActivity extends BaseActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        bannerImageView = findViewById(R.id.bannerImageView);
         setupBottomNavigation();
         setupRecyclerView();
         setupSearch();
         loadRestaurant();
+        loadBannerAds();
     }
+
+    private void loadBannerAds() {
+        String bannerImageUrl = "https://firebasestorage.googleapis.com/v0/b/itisdev-final.firebasestorage.app/o/restaurantads%2Fjollibee_ad.jpg?alt=media&token=62211823-9643-4261-b7df-632af387b93c";
+
+        Glide.with(MainActivity.this)
+                .load(bannerImageUrl)  // Firebase Storage URL
+                .into(bannerImageView);  // Load it into the ImageView
+    }
+
+
 
     private void loadRestaurant() {
         database.getReference("restaurants").addValueEventListener(new ValueEventListener() {
