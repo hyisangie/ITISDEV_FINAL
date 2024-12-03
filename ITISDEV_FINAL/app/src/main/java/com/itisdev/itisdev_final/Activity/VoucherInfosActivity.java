@@ -6,19 +6,27 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.itisdev.itisdev_final.R;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
 import android.widget.Toast;
+import androidx.appcompat.app.AlertDialog;
+import android.content.Intent;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+
 
 import com.itisdev.itisdev_final.Adapter.ClaimedVoucherAdapter;
 import com.itisdev.itisdev_final.Adapter.VoucherAdapter;
 import com.itisdev.itisdev_final.Domain.Voucher;
 import com.itisdev.itisdev_final.Domain.ClaimedVoucher;
 import com.itisdev.itisdev_final.databinding.ActivityVoucherInfosBinding;
+import com.itisdev.itisdev_final.Domain.VoucherShareListener;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -34,7 +42,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class VoucherInfosActivity extends AppCompatActivity {
+public class VoucherInfosActivity extends AppCompatActivity implements VoucherShareListener{
     private ActivityVoucherInfosBinding binding;
     private DatabaseReference vouchersRef, claimedVouchersRef;
     private String restaurantId;
@@ -43,6 +51,11 @@ public class VoucherInfosActivity extends AppCompatActivity {
     private List<ClaimedVoucher> claimedVoucherList;
     private List<ClaimedVoucher> filteredClaimedVoucherList;
     private ClaimedVoucherAdapter claimedVoucherAdapter;
+
+    private String generateVoucherLink(String voucherId) {
+        return "https://itisdev-final-default-rtdb.firebaseio.com/vouchers/" + voucherId;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,9 +77,12 @@ public class VoucherInfosActivity extends AppCompatActivity {
     private void initializeViews() {
         // Initialize Available Vouchers RecyclerView
         voucherList = new ArrayList<>();
-        voucherAdapter = new VoucherAdapter(this, voucherList, VoucherAdapter.TYPE_INFO, restaurantId);
+        voucherAdapter = new VoucherAdapter(this, voucherList, VoucherAdapter.TYPE_INFO, restaurantId, this);
+
+
         binding.voucherScrollView.setLayoutManager(new LinearLayoutManager(this));
         binding.voucherScrollView.setAdapter(voucherAdapter);
+        Log.d("VoucherInfosActivity", "RecyclerView adapter set. Adapter item count: " + voucherAdapter.getItemCount());
 
         // Initialize Claimed Vouchers RecyclerView
         claimedVoucherList = new ArrayList<>();
@@ -180,12 +196,57 @@ public class VoucherInfosActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    public void showSharePopup(String voucherId) {
+        Log.d("VoucherInfosActivity", "showSharePopup called for voucher ID: " + voucherId);
+        String voucherLink = generateVoucherLink(voucherId);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Share Voucher")
+                .setMessage("Voucher Link: \n" + voucherLink)
+                .setPositiveButton("Copy to Clipboard", (dialog, which) -> {
+                    ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clip = ClipData.newPlainText("Voucher Link", voucherLink);
+                    clipboard.setPrimaryClip(clip);
+                    Toast.makeText(this, "Link copied to clipboard", Toast.LENGTH_SHORT).show();
+                })
+                .setNeutralButton("Share via Messenger", (dialog, which) -> {
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.setType("text/plain");
+                    intent.setPackage("com.facebook.orca");
+                    intent.putExtra(Intent.EXTRA_TEXT, "Check out this voucher: " + voucherLink);
+                    try {
+                        startActivity(intent);
+                    } catch (Exception e) {
+                        Toast.makeText(this, "Messenger is not installed", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Share via Instagram", (dialog, which) -> {
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.setType("text/plain");
+                    intent.setPackage("com.instagram.android");
+                    intent.putExtra(Intent.EXTRA_TEXT, "Check out this voucher: " + voucherLink);
+                    try {
+                        startActivity(intent);
+                    } catch (Exception e) {
+                        Toast.makeText(this, "Instagram is not installed", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setCancelable(true)
+                .show();
+    }
+
+    @Override
+    public void onShareVoucher(String voucherId) {
+        showSharePopup(voucherId);
+    }
+
     private void loadData() {
         loadAvailableVouchers();
         loadClaimedVouchers();
     }
 
     private void loadAvailableVouchers() {
+        Log.d("VoucherInfosActivity", "Voucher list loaded. Size: " + voucherList.size());
         vouchersRef.orderByChild("restaurantId").equalTo(restaurantId)
                 .addValueEventListener(new ValueEventListener() {
                     @Override

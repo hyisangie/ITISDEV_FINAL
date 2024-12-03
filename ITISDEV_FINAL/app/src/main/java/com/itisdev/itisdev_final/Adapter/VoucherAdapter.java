@@ -17,8 +17,10 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.itisdev.itisdev_final.Activity.VoucherInfosActivity;
 import com.itisdev.itisdev_final.Domain.ClaimedVoucher;
 import com.itisdev.itisdev_final.Domain.Voucher;
+import com.itisdev.itisdev_final.Domain.VoucherShareListener;
 import com.itisdev.itisdev_final.R;
 
 import java.util.HashMap;
@@ -35,16 +37,21 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
     private List<Voucher> vouchers;
     private int viewType;
     private String currentUserId;
+    private final VoucherShareListener shareListener;
 
     public void setRestaurantNames(Map<String, String> restaurantNames) {
         this.restaurantNames = restaurantNames;
     }
 
-    public VoucherAdapter(Context context, List<Voucher> vouchers, int viewType, String currentUserId) {
+    public VoucherAdapter(Context context, List<Voucher> vouchers, int viewType, String currentUserId, VoucherShareListener shareListener) {
         this.context = context;
         this.vouchers = vouchers;
         this.viewType = viewType;
         this.currentUserId = currentUserId;
+        this.shareListener = shareListener;
+
+        Log.d("VoucherAdapter", "Context received: " + context.getClass().getSimpleName());
+
     }
 
     @NonNull
@@ -77,8 +84,17 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
             holder.conditionText.setText("Min. Spend ₱" + voucher.getMinSpend());
         } else if (voucher.getType() == 2) {
             holder.discountText.setText("Up to ₱" + voucher.getAmount() + " discount");
-            holder.conditionText.setText("Share to friends");
         }
+
+        Log.d("VoucherAdapter", "Attaching click listener for voucher ID: " + voucher.getId());
+
+        holder.shareVoucherBtn.setOnClickListener(v -> {
+            if (shareListener != null) {
+                shareListener.onShareVoucher(voucher.getId());
+            } else {
+                Log.e("VoucherAdapter", "ShareListener is null.");
+            }
+    });
 
         Log.d("VoucherAdapter", "voucher: " + voucher.getRestaurantId());
         switch (viewType) {
@@ -183,7 +199,7 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
 
     static class VoucherViewHolder extends RecyclerView.ViewHolder {
         TextView restaurantText, discountText, conditionText, availedDiscountText;
-        Button claimVoucherBtn;
+        Button claimVoucherBtn, shareVoucherBtn;
 
         public VoucherViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -192,6 +208,7 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
             conditionText = itemView.findViewById(R.id.voucherConditionTxt);
             availedDiscountText = itemView.findViewById(R.id.voucherAvailedTxt);
             claimVoucherBtn = itemView.findViewById(R.id.claimVoucherBtn);
+            shareVoucherBtn = itemView.findViewById(R.id.shareVoucherBtn);
         }
     }
 }

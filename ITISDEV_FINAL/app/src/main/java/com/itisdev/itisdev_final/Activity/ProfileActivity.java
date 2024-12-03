@@ -3,9 +3,17 @@ package com.itisdev.itisdev_final.Activity;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -20,8 +28,10 @@ import com.itisdev.itisdev_final.Adapter.ReviewAdapter;
 import com.itisdev.itisdev_final.Adapter.VoucherAdapter;
 import com.itisdev.itisdev_final.Domain.Review;
 import com.itisdev.itisdev_final.Domain.Voucher;
+import com.itisdev.itisdev_final.Domain.VoucherShareListener;
 import com.itisdev.itisdev_final.R;
 import com.itisdev.itisdev_final.databinding.ActivityProfileBinding;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class ProfileActivity extends BaseActivity {
+public class ProfileActivity extends BaseActivity implements VoucherShareListener {
 
     private ActivityProfileBinding binding;
     private List<Review> reviews;
@@ -185,6 +195,37 @@ public class ProfileActivity extends BaseActivity {
                 });
     }
 
+
+    public void onShareVoucher(String voucherId) {
+        String voucherLink = "https://itisdev-final-default-rtdb.firebaseio.com/vouchers/" + voucherId;
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(true);
+
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_share_voucher, null);
+        builder.setView(dialogView);
+
+        // TextView and Button
+        @SuppressLint({"MissingInflatedId", "LocalSuppress"}) TextView messageTextView = dialogView.findViewById(R.id.voucher_message);
+        @SuppressLint({"MissingInflatedId", "LocalSuppress"}) Button copyButton = dialogView.findViewById(R.id.copy_button);
+
+        // voucher link in the message TextView
+        messageTextView.setText("Voucher Link:\n" + voucherLink);
+
+        // "Copy to Clipboard"
+        copyButton.setOnClickListener(v -> {
+            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("Voucher Link", voucherLink);
+            clipboard.setPrimaryClip(clip);
+            Toast.makeText(this, "Link copied to clipboard", Toast.LENGTH_SHORT).show();
+        });
+
+        builder.show();
+    }
+
+
+
+
     private void loadRestaurantName(Voucher voucher) {
         database.getReference("restaurants")
                 .orderByChild("id").equalTo(voucher.getRestaurantId())
@@ -243,7 +284,7 @@ public class ProfileActivity extends BaseActivity {
 
         // Vouchers RecyclerView
         vouchers = new ArrayList<>();
-        voucherAdapter = new VoucherAdapter(this, vouchers, 1, userId);
+        voucherAdapter = new VoucherAdapter(this, vouchers, 1, userId, this);
         binding.voucherScrollView.setLayoutManager(
                 new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         binding.voucherScrollView.setAdapter(voucherAdapter);

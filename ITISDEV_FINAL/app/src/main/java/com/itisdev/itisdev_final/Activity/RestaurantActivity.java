@@ -79,12 +79,13 @@ public class RestaurantActivity extends AppCompatActivity {
 
     private void initializeVoucherRecyclerView() {
         voucherList = new ArrayList<>();
-        voucherAdapter = new VoucherAdapter(this, voucherList, VoucherAdapter.TYPE_RESTAURANT, currentUserId);
+        voucherAdapter = new VoucherAdapter(this, voucherList, VoucherAdapter.TYPE_RESTAURANT, currentUserId, null);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         binding.vouchersRecycler.setLayoutManager(layoutManager);
         binding.vouchersRecycler.setAdapter(voucherAdapter);
     }
+
 
     private void initializeReviewRecyclerView() {
         reviewList = new ArrayList<>();
