@@ -221,23 +221,10 @@ public class SignupAsBusinessOwnerActivity extends BaseActivity {
             restaurant.setId(restaurantRef.getKey());
         }
 
-
         restaurantRef.setValue(restaurant)
                 .addOnSuccessListener(aVoid -> {
-                    progressDialog.dismiss();
-                    Toast.makeText(SignupAsBusinessOwnerActivity.this, isEditMode ?
-                            "Restaurant information updated successfully" : "Restaurant information saved successfully",
-                            Toast.LENGTH_LONG).show();
-
-                    if (isEditMode) {
-                        finish();
-                    } else {
-                        Intent intent = new Intent(SignupAsBusinessOwnerActivity.this, RestaurantProfileActivity.class);
-                        intent.putExtra("restaurantName", restaurant.getName());
-                        intent.putExtra("restaurantId", restaurant.getId());
-                        startActivity(intent);
-                        finish();
-                    }
+                    // Update user's restaurantId
+                    updateUserRestaurantId(restaurant.getId(), progressDialog);
                 })
                 .addOnFailureListener(e -> {
                     progressDialog.dismiss();
@@ -246,6 +233,33 @@ public class SignupAsBusinessOwnerActivity extends BaseActivity {
                 });
     }
 
+    private void updateUserRestaurantId(String restaurantId, ProgressDialog progressDialog) {
+        String currentUserId = getCurrentUserId();
+
+        DatabaseReference userRef = database.getReference("users").child(currentUserId);
+        userRef.child("restaurantId").setValue(restaurantId)
+                .addOnSuccessListener(aVoid -> {
+                    progressDialog.dismiss();
+                    Toast.makeText(SignupAsBusinessOwnerActivity.this, isEditMode ?
+                                    "Restaurant information updated successfully" : "Restaurant information saved successfully",
+                            Toast.LENGTH_LONG).show();
+
+                    if (isEditMode) {
+                        finish();
+                    } else {
+                        Intent intent = new Intent(SignupAsBusinessOwnerActivity.this, RestaurantProfileActivity.class);
+                        intent.putExtra("restaurantName", restaurantNameEdt.getText().toString());
+                        intent.putExtra("restaurantId", restaurantId);
+                        startActivity(intent);
+                        finish();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    progressDialog.dismiss();
+                    Toast.makeText(SignupAsBusinessOwnerActivity.this,
+                            "Failed to update user's restaurant ID", Toast.LENGTH_LONG).show();
+                });
+    }
 
 
     private boolean validateInputs() {

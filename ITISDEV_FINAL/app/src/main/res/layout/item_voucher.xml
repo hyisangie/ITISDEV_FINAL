@@ -14,6 +14,13 @@
         android:padding="16dp">
 
         <TextView
+            android:id="@+id/claimedVoucherIdTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/readex_pro"
+            android:textSize="14sp"/>
+
+        <TextView
             android:id="@+id/voucherRestaurantTxt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

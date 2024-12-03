@@ -1,10 +1,17 @@
 package com.itisdev.itisdev_final.Activity;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -15,12 +22,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.itisdev.itisdev_final.Adapter.ImageSliderAdapter;
 import com.itisdev.itisdev_final.Adapter.ReviewAdapter;
 import com.itisdev.itisdev_final.Adapter.VoucherAdapter;
 import com.itisdev.itisdev_final.Domain.Restaurant;
 import com.itisdev.itisdev_final.Domain.Review;
 import com.itisdev.itisdev_final.Domain.Voucher;
+import com.itisdev.itisdev_final.R;
 import com.itisdev.itisdev_final.databinding.ActivityRestaurantBinding;
 
 import java.util.ArrayList;
@@ -36,6 +46,7 @@ public class RestaurantActivity extends AppCompatActivity {
     private List<Review> reviewList;
     private String currentUserId;
     private ImageSliderAdapter imageSliderAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -153,7 +164,7 @@ public class RestaurantActivity extends AppCompatActivity {
                         for (DataSnapshot voucherSnapshot : snapshot.getChildren()) {
                             Voucher voucher = voucherSnapshot.getValue(Voucher.class);
                             if (voucher != null && voucher.isActive()) {
-                                voucherList.add(voucher);
+                                checkIfVoucherClaimed(voucher);
                             }
                         }
 
@@ -170,6 +181,43 @@ public class RestaurantActivity extends AppCompatActivity {
                     public void onCancelled(@NonNull DatabaseError error) {
                         Toast.makeText(RestaurantActivity.this,
                                 "Failed to load vouchers", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void checkIfVoucherClaimed(Voucher voucher) {
+        databaseReference.child("claimedVouchers")
+                .orderByChild("voucherId").equalTo(voucher.getId())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        boolean alreadyClaimed = false;
+                        for (DataSnapshot claimedVoucherSnapshot : snapshot.getChildren()) {
+                            String userId = claimedVoucherSnapshot.child("userId").getValue(String.class);
+                            if (currentUserId.equals(userId)) {
+                                alreadyClaimed = true;
+                                break;
+                            }
+                        }
+
+                        // If not claimed, add to voucherList
+                        if (!alreadyClaimed) {
+                            voucherList.add(voucher);
+                        }
+
+                        // Update UI based on vouchers availability
+                        if (voucherList.isEmpty()) {
+                            binding.vouchersRecycler.setVisibility(View.GONE);
+                        } else {
+                            binding.vouchersRecycler.setVisibility(View.VISIBLE);
+                            voucherAdapter.notifyDataSetChanged();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(RestaurantActivity.this,
+                                "Failed to check claimed vouchers", Toast.LENGTH_SHORT).show();
                     }
                 });
     }

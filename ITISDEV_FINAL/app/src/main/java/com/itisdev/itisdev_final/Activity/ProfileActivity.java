@@ -105,7 +105,7 @@ public class ProfileActivity extends BaseActivity implements VoucherShareListene
                         List<String> voucherIds = new ArrayList<>();
                         // collect unused voucher IDs
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                            Boolean isUsed = dataSnapshot.child("isUsed").getValue(Boolean.class);
+                            Boolean isUsed = dataSnapshot.child("used").getValue(Boolean.class);
                             if (isUsed != null && !isUsed) {
                                 String voucherId = dataSnapshot.child("voucherId").getValue(String.class);
                                 if (voucherId != null) {

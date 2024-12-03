@@ -4,7 +4,7 @@ public class ClaimedVoucher {
     private String id;
     private String userId;
     private String voucherId;
-    private boolean isUsed;
+    private boolean used;
 
     // Getters and Setters
     public String getId() { return id; }
@@ -13,6 +13,6 @@ public class ClaimedVoucher {
     public void setUserId(String userId) { this.userId = userId; }
     public String getVoucherId() { return voucherId; }
     public void setVoucherId(String voucherId) { this.voucherId = voucherId; }
-    public boolean isUsed() { return isUsed; }
-    public void setUsed(boolean used) { isUsed = used; }
+    public boolean getUsed() { return used; }
+    public void setUsed(boolean used) { this.used = used; }
 }

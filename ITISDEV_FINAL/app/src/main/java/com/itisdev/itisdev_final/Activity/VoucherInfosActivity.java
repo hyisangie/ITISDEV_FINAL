@@ -65,11 +65,32 @@ public class VoucherInfosActivity extends AppCompatActivity implements VoucherSh
         initializeFirebase();
         initializeViews();
         setupListeners();
-        loadData();
     }
 
     private void initializeFirebase() {
-        restaurantId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(currentUserId);
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    restaurantId = snapshot.child("restaurantId").getValue(String.class);
+                    if (restaurantId != null) {
+                        Log.d("RestaurantDebug", "User's Restaurant ID: " + restaurantId);
+//                        loadData();
+                    } else {
+                        Log.e("RestaurantDebug", "No restaurantId found for this user.");
+                    }
+                } else {
+                    Log.e("RestaurantDebug", "User does not exist.");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("RestaurantDebug", "Failed to fetch user data", error.toException());
+            }
+        });
         vouchersRef = FirebaseDatabase.getInstance().getReference("vouchers");
         claimedVouchersRef = FirebaseDatabase.getInstance().getReference("claimedVouchers");
     }
@@ -246,11 +267,12 @@ public class VoucherInfosActivity extends AppCompatActivity implements VoucherSh
     }
 
     private void loadAvailableVouchers() {
-        Log.d("VoucherInfosActivity", "Voucher list loaded. Size: " + voucherList.size());
+        Log.d("VoucherInfosActivity", "restaurantId: " + restaurantId);
         vouchersRef.orderByChild("restaurantId").equalTo(restaurantId)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        Log.d("VoucherInfosActivity", snapshot.toString());
                         voucherList.clear();
                         for (DataSnapshot voucherSnapshot : snapshot.getChildren()) {
                             Voucher voucher = voucherSnapshot.getValue(Voucher.class);
@@ -330,7 +352,7 @@ public class VoucherInfosActivity extends AppCompatActivity implements VoucherSh
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.exists()) {
                             ClaimedVoucher claimedVoucher = snapshot.getValue(ClaimedVoucher.class);
-                            if (claimedVoucher != null && !claimedVoucher.isUsed()) {
+                            if (claimedVoucher != null && !claimedVoucher.getUsed()) {
                                 markVoucherAsUsed(voucherId);
                             } else {
                                 Toast.makeText(VoucherInfosActivity.this, "Voucher has already been used", Toast.LENGTH_SHORT).show();
@@ -348,7 +370,7 @@ public class VoucherInfosActivity extends AppCompatActivity implements VoucherSh
     }
 
     private void markVoucherAsUsed(String voucherId) {
-        claimedVouchersRef.child(voucherId).child("isUsed").setValue(true)
+        claimedVouchersRef.child(voucherId).child("used").setValue(true)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(VoucherInfosActivity.this, "Voucher used successfully", Toast.LENGTH_SHORT).show();
                     binding.voucherInput.setText("");

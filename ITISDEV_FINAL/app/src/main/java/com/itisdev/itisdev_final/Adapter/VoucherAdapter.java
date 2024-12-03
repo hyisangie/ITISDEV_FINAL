@@ -94,7 +94,7 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
             } else {
                 Log.e("VoucherAdapter", "ShareListener is null.");
             }
-    });
+        });
 
         Log.d("VoucherAdapter", "voucher: " + voucher.getRestaurantId());
         switch (viewType) {
@@ -103,14 +103,52 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
                 String restaurantName = restaurantNames.get(voucher.getRestaurantId());
                 holder.restaurantText.setText(restaurantName != null ? restaurantName : "Restaurant Not Found");
 
+                // load claimedVoucher ID
+                FirebaseDatabase.getInstance().getReference("claimedVouchers")
+                        .orderByChild("voucherId").equalTo(voucher.getId())
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                String claimedVoucherId = null;
+                                for (DataSnapshot claimedVoucherSnapshot : snapshot.getChildren()) {
+                                    String userId = claimedVoucherSnapshot.child("userId").getValue(String.class);
+                                    if (userId != null && userId.equals(currentUserId)) {
+                                        claimedVoucherId = claimedVoucherSnapshot.child("id").getValue(String.class);
+                                        break;
+                                    }
+                                }
+
+                                if (claimedVoucherId != null) {
+                                    holder.claimedVoucherIdText.setText("Claimed ID: " + claimedVoucherId);
+                                    holder.claimedVoucherIdText.setVisibility(View.VISIBLE);
+                                    holder.claimVoucherBtn.setEnabled(false);
+                                    holder.claimVoucherBtn.setText("Claimed");
+                                } else {
+                                    holder.claimedVoucherIdText.setVisibility(View.GONE);
+                                    holder.claimVoucherBtn.setEnabled(true);
+                                    holder.claimVoucherBtn.setText("Claim");
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Log.e("VoucherAdapter", "Error loading claimed vouchers", error.toException());
+                            }
+                        });
                 // Type 2 voucher
                 if (voucher.getType() == 2) {
                     loadAvailedAmount(voucher, holder);
+                } else {
+                    holder.shareVoucherBtn.setVisibility(View.GONE);
                 }
+                holder.claimVoucherBtn.setVisibility(View.GONE);
                 break;
 
             case TYPE_RESTAURANT:
             case TYPE_INFO:
+                if (voucher.getType() == 1) {
+                    holder.shareVoucherBtn.setVisibility(View.GONE);
+                }
                 holder.restaurantText.setVisibility(View.GONE);
                 holder.availedDiscountText.setVisibility(View.GONE);
                 break;
@@ -169,6 +207,9 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        Log.d("LOAD AVAILED AMOUNT - VOUCHER ID", voucher.getId());
+                        Log.d("LOAD AVAILED AMOUNT - snapshot", snapshot.toString());
+
                         double availedAmount = 0;
 
                         for (DataSnapshot discountSnapshot : snapshot.getChildren()) {
@@ -198,7 +239,7 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
     }
 
     static class VoucherViewHolder extends RecyclerView.ViewHolder {
-        TextView restaurantText, discountText, conditionText, availedDiscountText;
+        TextView restaurantText, discountText, conditionText, availedDiscountText, claimedVoucherIdText;
         Button claimVoucherBtn, shareVoucherBtn;
 
         public VoucherViewHolder(@NonNull View itemView) {
@@ -207,6 +248,7 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
             discountText = itemView.findViewById(R.id.voucherDiscountTxt);
             conditionText = itemView.findViewById(R.id.voucherConditionTxt);
             availedDiscountText = itemView.findViewById(R.id.voucherAvailedTxt);
+            claimedVoucherIdText = itemView.findViewById(R.id.claimedVoucherIdTxt);
             claimVoucherBtn = itemView.findViewById(R.id.claimVoucherBtn);
             shareVoucherBtn = itemView.findViewById(R.id.shareVoucherBtn);
         }
