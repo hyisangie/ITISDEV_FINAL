@@ -11,4 +11,11 @@
         <item name="android:textStyle">bold</item>
         <item name="android:gravity">center</item>
     </style>
+
+    <style name="CustomTabTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:fontFamily">@font/readex_pro</item>
+        <item name="textAllCaps">false</item>
+    </style>
 </resources>

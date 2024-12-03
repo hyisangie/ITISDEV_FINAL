@@ -22,6 +22,11 @@ public class ImageSliderAdapter extends RecyclerView.Adapter<ImageSliderAdapter.
         this.imageUrls = imageUrls;
     }
 
+    public void setImages(List<String> newImages) {
+        this.imageUrls = newImages;
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

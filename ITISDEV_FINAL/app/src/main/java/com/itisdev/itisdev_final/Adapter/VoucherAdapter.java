@@ -1,5 +1,6 @@
 package com.itisdev.itisdev_final.Adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.itisdev.itisdev_final.Domain.ClaimedVoucher;
 import com.itisdev.itisdev_final.Domain.Voucher;
 import com.itisdev.itisdev_final.R;
 
@@ -52,6 +54,20 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
         return new VoucherViewHolder(view);
     }
 
+    private void showVoucherClaimedDialog(Context context, String voucherCode) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Voucher Claimed!")
+                .setMessage("Your voucher code is: " + voucherCode + "\n\nShow this code to the restaurant when using the voucher.")
+                .setPositiveButton("OK", null)
+                .show();
+    }
+
+    private String getRestaurantPrefix(String restaurantId) {
+        // Get restaurant name from database and return first letters
+        // For now, return a default prefix
+        return "VC";
+    }
+
     @Override
     public void onBindViewHolder(@NonNull VoucherViewHolder holder, int position) {
         Voucher voucher = vouchers.get(position);
@@ -69,7 +85,6 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
             case TYPE_PROFILE:
                 holder.restaurantText.setVisibility(View.VISIBLE);
                 String restaurantName = restaurantNames.get(voucher.getRestaurantId());
-
                 holder.restaurantText.setText(restaurantName != null ? restaurantName : "Restaurant Not Found");
 
                 // Type 2 voucher
@@ -87,19 +102,28 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
 
         // Claim Voucher Button Click Listener
         holder.claimVoucherBtn.setOnClickListener(v -> {
+            // Generate a unique voucher code
+            String voucherCode = getRestaurantPrefix(voucher.getRestaurantId()) +
+                    String.format("%04d", (int)(Math.random() * 10000));
+
+            // Create claimed voucher entry
+            ClaimedVoucher claimedVoucher = new ClaimedVoucher();
+            claimedVoucher.setId(voucherCode);
+            claimedVoucher.setUserId(currentUserId);
+            claimedVoucher.setVoucherId(voucher.getId());
+            claimedVoucher.setUsed(false);
+
+            // Save to Firebase
             FirebaseDatabase.getInstance().getReference("claimedVouchers")
-                    .child(currentUserId) // Current user ID
-                    .child(voucher.getId()) // Voucher ID
-                    .setValue(true) // Mark as claimed
+                    .child(voucherCode)
+                    .setValue(claimedVoucher)
                     .addOnSuccessListener(aVoid -> {
-                        // Success: Notify user
-                        Toast.makeText(context, "Voucher claimed successfully!", Toast.LENGTH_SHORT).show();
+                        showVoucherClaimedDialog(context, voucherCode);
                         holder.claimVoucherBtn.setEnabled(false);
                         holder.claimVoucherBtn.setText("Claimed");
                     })
                     .addOnFailureListener(e -> {
-                        // Failure: Notify user
-                        Toast.makeText(context, "Failed to claim voucher. Try again.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Failed to claim voucher", Toast.LENGTH_SHORT).show();
                     });
         });
 
@@ -159,7 +183,7 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
 
     static class VoucherViewHolder extends RecyclerView.ViewHolder {
         TextView restaurantText, discountText, conditionText, availedDiscountText;
-        Button claimVoucherBtn; // Claim button
+        Button claimVoucherBtn;
 
         public VoucherViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -167,7 +191,7 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
             discountText = itemView.findViewById(R.id.voucherDiscountTxt);
             conditionText = itemView.findViewById(R.id.voucherConditionTxt);
             availedDiscountText = itemView.findViewById(R.id.voucherAvailedTxt);
-            claimVoucherBtn = itemView.findViewById(R.id.claimVoucherBtn); // Initialize claim button
+            claimVoucherBtn = itemView.findViewById(R.id.claimVoucherBtn);
         }
     }
 }
