@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="200dp"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/claimedVoucherIdTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/readex_pro"
+            android:textSize="14sp"/>
+
+        <TextView
+            android:id="@+id/voucherRestaurantTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/readex_pro"
+            android:textSize="14sp"/>
+
+        <TextView
+            android:id="@+id/voucherDiscountTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:fontFamily="@font/readex_pro"/>
+
+        <TextView
+            android:id="@+id/voucherConditionTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/public_sans"
+            android:textSize="14sp"/>
+
+        <TextView
+            android:id="@+id/voucherAvailedTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/public_sans"
+            android:textSize="14sp"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/claimVoucherBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Claim"
+            android:textColor="@android:color/white"
+            android:backgroundTint="#C24334"/>
+
+        <Button
+            android:id="@+id/shareVoucherBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Share"
+            android:backgroundTint="#2196F3"
+            android:textColor="@android:color/white" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
